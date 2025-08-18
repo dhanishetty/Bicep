@@ -39,9 +39,9 @@ A **Resource provider** is a logical grouping of resource types that usually rel
 
 Examples of resource providers include:
 
-    - **Microsoft.Compute**, which is used for virtual machines.
-    - **Microsoft.Network**, which is used for networking resources like virtual networks, network security groups, and route tables.
-    - **Microsoft.Cache**, which is used for Azure Cache for Redis.
-    - **Microsoft.Sql**, which is used for Azure SQL.
-    - **Microsoft.Web**, which is used for Azure App Service and Azure Functions.
-    - **Microsoft.DocumentDB**, which is used for Azure Cosmos DB.
+  - **Microsoft.Compute**, which is used for virtual machines.
+  - **Microsoft.Network**, which is used for networking resources like virtual networks, network security groups, and route tables.
+  - **Microsoft.Cache**, which is used for Azure Cache for Redis.
+  - **Microsoft.Sql**, which is used for Azure SQL.
+  - **Microsoft.Web**, which is used for Azure App Service and Azure Functions.
+  - **Microsoft.DocumentDB**, which is used for Azure Cosmos DB.
