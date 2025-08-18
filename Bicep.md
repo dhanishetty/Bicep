@@ -6,7 +6,7 @@
     * Improved understanding of cloud resources with version control and documentation.
 4. IaC helps avoid configuration drift through idempotent operations, allowing for consistent redeployment.
 5. It supports provisioning new environments, differentiating between production and nonproduction setups, and aids in disaster recovery.
-6. Two approaches to IaC are imperative (step-by-step commands) and declarative (specifying end configuration without detailing the process).
+6. Two approaches to IaC are **imperative** (step-by-step commands) and **declarative** (just declaring the desired state. specifying end configuration without detailing the process).
 7. Examples of imperative code include scripting languages like Bash or Azure PowerShell, while declarative code can be written using templates like JSON or Bicep.
 8. The module focuses on using Bicep templates for declarative IaC.
 
@@ -33,3 +33,6 @@ az bicep build --file main.bicep
 
 ---
 
+### Resource providers
+
+A **Resource provider** is a logical grouping of resource types that usually relate to one or a few Azure services.
