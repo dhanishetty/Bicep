@@ -35,7 +35,7 @@ az bicep build --file main.bicep
 
 ### Resource providers
 
-A **Resource provider** is a logical grouping of resource types that usually relate to one or a few Azure services.
+A `Resource provider` is a logical grouping of resource types that usually relate to one or a few Azure services.
 
 Examples of resource providers include:
 
@@ -45,3 +45,11 @@ Examples of resource providers include:
   - `Microsoft.Sql`, which is used for Azure SQL.
   - `Microsoft.Web`, which is used for Azure App Service and Azure Functions.
   - `Microsoft.DocumentDB`, which is used for Azure Cosmos DB.
+
+---
+
+### Resource types
+
+- You combine the resource provider and type name to make a fully qualified resource type name. 
+- The fully qualified type name consists of the resource provider name, a slash (`/`), and the resource type. 
+    - For example, a storage account's fully qualified type name is `Microsoft.Storage/storageAccounts`. In this instance, its resource provider name is `Microsoft.Storage` and the resource type is `storageAccounts`.
