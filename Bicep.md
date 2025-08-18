@@ -53,3 +53,5 @@ Examples of resource providers include:
 - You combine the resource provider and type name to make a fully qualified resource type name. 
 - The fully qualified type name consists of the resource provider name, a slash (`/`), and the resource type. 
     - For example, a storage account's fully qualified type name is `Microsoft.Storage/storageAccounts`. In this instance, its resource provider name is `Microsoft.Storage` and the resource type is `storageAccounts`.
+---
+
