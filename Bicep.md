@@ -15,6 +15,15 @@
 
 az deployment group create --template-file main.bicep --resource-group storage-resource-group
 
+This command is **deploying your Bicep template into a specific Azure resource group**.
+
+* `az deployment group create` → Creates (or updates) a deployment at **resource group scope**.
+* `--template-file main.bicep` → Points to your Bicep template that defines the Azure resources.
+* `--resource-group storage-resource-group` → Tells Azure **which resource group** to deploy those resources into (here: `storage-resource-group`).
+
+👉 In short:
+It takes the infrastructure defined in **`main.bicep`** and deploys it into the **`storage-resource-group`** resource group in Azure.
+
 ---
 ---
 
