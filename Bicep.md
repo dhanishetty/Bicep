@@ -32,6 +32,7 @@ It takes the infrastructure defined in **`main.bicep`** and deploys it into the 
 az bicep build --file main.bicep
 
 ---
+---
 
 ### Resource providers
 
@@ -47,11 +48,20 @@ Examples of resource providers include:
   - `Microsoft.DocumentDB`, which is used for Azure Cosmos DB.
 
 ---
+---
 
 ### Resource types
 
 - You combine the resource provider and type name to make a fully qualified resource type name. 
 - The fully qualified type name consists of the resource provider name, a slash (`/`), and the resource type. 
     - For example, a storage account's fully qualified type name is `Microsoft.Storage/storageAccounts`. In this instance, its resource provider name is `Microsoft.Storage` and the resource type is `storageAccounts`.
----
 
+---
+---
+### Resource IDs
+
+- Every Azure resource has a unique resource ID.
+- A resource ID for a storage account looks like this:
+        /subscriptions/aaaa0a0a-bb1b-cc2c-dd3d-eeeeee4e4e4e/resourceGroups/ToyDevelopment/providers/Microsoft.Storage/storageAccounts/secrettoys
+- For example The resource ID for a blob container includes the name of the storage account that contains the container, and the container's name.
+  
