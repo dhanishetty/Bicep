@@ -65,3 +65,14 @@ Examples of resource providers include:
         /subscriptions/aaaa0a0a-bb1b-cc2c-dd3d-eeeeee4e4e4e/resourceGroups/ToyDevelopment/providers/Microsoft.Storage/storageAccounts/secrettoys
 - For example The resource ID for a blob container includes the name of the storage account that contains the container, and the container's name.
   
+---
+
+### Parameters and variables
+
+* A `parameter` lets you bring in values from outside the Bicep file.
+* A `variable` is defined and set within the Bicep file.
+* It's a good idea to use parameters for things that will change between each deployment, like:
+  - Resource names that need to be unique.
+  - Locations into which to deploy the resources.
+  - Settings that affect the pricing of resources, like their SKUs, pricing tiers, and instance counts.
+  - Credentials and information needed to access other systems that aren't defined in the Bicep file.
