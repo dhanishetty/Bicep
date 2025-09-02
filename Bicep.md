@@ -147,5 +147,5 @@ var storageAccountSkuName = (environmentType == 'prod') ? 'Standard_GRS' : 'Stan
 var appServicePlanSkuName = (environmentType == 'prod') ? 'P2V3' : 'F1'
 ```
 
-* `(environmentType == 'prod')` evaluates to a Boolean (true or false) value, depending on which allowed value is used for `environmentType` parameter.
-* `?` is called a ternary operator, and it evaluates an `if/then` statement. The value after the `?` operator is used if the expression is true. If the expression evaluates to false, the value after the colon (`:`) is used.
+* For the `storageAccountSkuName` variable, if the `environmentType` parameter is set to `prod`, then use the `Standard_GRS` SKU. Otherwise, use the `Standard_LRS` SKU.
+* `For the `appServicePlanSkuName` variable, if the `environmentType` parameter is set to `prod`, then use the `P2V3` SKU and the `PremiumV3` tier. Otherwise, use the `F1` SKU.
