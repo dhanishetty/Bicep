@@ -87,6 +87,8 @@ Examples of resource providers include:
 ```Bicep
 param appServiceAppName string // Without default value
 param appServiceAppName string  = 'toy-product-launch-1' // With default value
+
+param location string = resourceGroup().location //This deploys all resources into the same location in which the resource group was created.
 ```
 
 * `param` tells Bicep that you're defining a parameter.
@@ -94,3 +96,20 @@ param appServiceAppName string  = 'toy-product-launch-1' // With default value
 * `string` is the type of the parameter.
 * ` = 'toy-product-launch-1'` default value.
 
+---
+### Adding a variable
+
+```Bicep
+var appServicePlanName = 'toy-product-launch-plan'
+```
+---
+### Resource names
+
+* We have two resources that need unique names: the storage account and the App Service app.
+* Bicep has another function called uniqueString(). When you use this function, you need to provide a seed value.
+
+```Bicep
+param storageAccountName string = uniqueString(resourceGroup().id)
+
+// resourceGroup().id = /subscriptions/aaaa0a0a-bb1b-cc2c-dd3d-eeeeee4e4e4e/resourceGroups/MyResourceGroup
+```
