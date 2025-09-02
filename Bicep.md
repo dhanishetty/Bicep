@@ -149,3 +149,28 @@ var appServicePlanSkuName = (environmentType == 'prod') ? 'P2V3' : 'F1'
 
 * For the `storageAccountSkuName` variable, if the `environmentType` parameter is set to `prod`, then use the `Standard_GRS` SKU. Otherwise, use the `Standard_LRS` SKU.
 * For the `appServicePlanSkuName` variable, if the `environmentType` parameter is set to `prod`, then use the `P2V3` SKU and the `PremiumV3` tier. Otherwise, use the `F1` SKU.
+
+---
+
+### Group resources by using modules
+
+* You'll also often need to emit outputs from the Bicep modules and files. 
+
+### Outputs
+
+example scenario's
+
+* You create a Bicep file that deploys a virtual machine, and you need to get the public IP address so you can SSH into the machine.
+* You create a Bicep file that accepts a set of parameters, like an environment name and an application name. The file uses an expression to name an Azure App Service app that it deploys. You need to output the app's name that the file has deployed so you can use it within a deployment pipeline to publish the application binaries.
+
+```Bicep
+output appServiceAppName string = appServiceAppName
+```
+The output definition includes a few key parts:
+
+* `output`: Declares an output value for the deployment.
+* `appServiceAppName (first one)`: The name of the output variable.
+* `string`: The data type of the output.
+* `= appServiceAppName (second one)`: The value being assigned to the output, which is usually a variable or property defined earlier in the Bicep file.
+
+---
