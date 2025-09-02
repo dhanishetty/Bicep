@@ -83,3 +83,6 @@ Examples of resource providers include:
 param appServiceAppName string
 ```
 
+* `param` tells Bicep that you're defining a parameter.
+* `appServiceAppName` is the name of the parameter. If you're deploying the Bicep file manually.
+* `string` is the type of the parameter.
