@@ -226,9 +226,9 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
   name: appServicePlanName
   location: location
   sku: {
-    name: appServicePlanSku.name
-    tier: appServicePlanSku.tier
-    capacity: appServicePlanSku.capacity
+    name: appServicePlanSku.name // Here
+    tier: appServicePlanSku.tier // Here
+    capacity: appServicePlanSku.capacity // Here
   }
 }
 ```
@@ -265,4 +265,82 @@ resource appServiceApp 'Microsoft.Web/sites@' = {
 }
 ```
 ---
+
+### Arrays
+
+* you might use an array of string values to declare a list of email addresses for an Azure Monitor action group.
+* For example. Azure Cosmos DB lets you create database accounts that span `multiple regions`, and it automatically handles the data replication for you. 
+* When you deploy a new database account, you need to specify the list of Azure regions that you want the account to be deployed into.
+
+```Bicep
+param cosmosDBAccountLocations array = [
+  {
+    locationName: 'australiaeast'
+  }
+  {
+    locationName: 'southcentralus'
+  }
+  {
+    locationName: 'westeurope'
+  }
+]
+```
+* When you declare your Azure Cosmos DB resource, you can now reference the array parameter:
+
+```Bicep
+resource account 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' = {
+  name: accountName
+  location: location
+  properties: {
+    locations: cosmosDBAccountLocations
+  }
+}
+```
+---
+
+### Specify a list of allowed values
+
+* To enforce this rule, you can use the `@allowed` parameter decorator.
+* A parameter decorator is a way of giving Bicep information about what a parameter's value needs to be. 
+* Here's parameter named appServicePlanSkuName can be restricted so that only a few specific values can be assigned:
+
+```Bicep
+@allowed([
+  'P1v3'
+  'P2v3'
+  'P3v3'
+])
+param appServicePlanSkuName string
+```
+---
+
+### Restrict parameter length and values
+
+* It's a good practice to specify the minimum and maximum character length for parameters that control naming, to avoid errors later during deployment.
+
+```Bicep
+@minLength(5)
+@maxLength(24)
+param storageAccountName string
+```
+* You can apply multiple decorators to a parameter by putting each decorator on its own line.
+
+* When you work with numeric parameters, you might need values to be in a particular range.
+* For example, your company might decide that whenever anybody deploys an App Service plan, they should always deploy at least one instance, but no more than 10 instances of the plan. 
+
+```Bicep
+@minValue(1)
+@maxValue(10)
+param appServicePlanInstanceCount int
+```
+---
+### Add descriptions to parameters
+
+* When someone use your templates, they'll need to understand what each parameter does so they can provide the right values.
+
+```Bicep
+@description('The locations into which this Cosmos DB account should be configured. This parameter needs to be a list of objects, each of which has a locationName property.')
+param cosmosDBAccountLocations array
+```
+
 
