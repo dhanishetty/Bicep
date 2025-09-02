@@ -1,3 +1,6 @@
+For Single comment use `//`
+for multi line comment use `/*   */`
+
 1. Infrastructure as code (IaC) automates infrastructure provisioning using a descriptive coding language, ensuring consistent and repeatable deployments.
 2. IaC can be compared to an instruction manual that details the desired configuration of resources.
 3. Benefits of adopting IaC include:
@@ -77,12 +80,15 @@ Examples of resource providers include:
   - Settings that affect the pricing of resources, like their SKUs, pricing tiers, and instance counts.
   - Credentials and information needed to access other systems that aren't defined in the Bicep file.
 
-### Add a parameter
+### Add a parameter with default value
 
 ```Bicep
-param appServiceAppName string
+param appServiceAppName string // Without default value
+param appServiceAppName string  = 'toy-product-launch-1' // With default value
 ```
 
 * `param` tells Bicep that you're defining a parameter.
 * `appServiceAppName` is the name of the parameter. If you're deploying the Bicep file manually.
 * `string` is the type of the parameter.
+* ` = 'toy-product-launch-1'` default value.
+
