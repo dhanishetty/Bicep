@@ -113,3 +113,39 @@ param storageAccountName string = uniqueString(resourceGroup().id)
 
 // resourceGroup().id = /subscriptions/aaaa0a0a-bb1b-cc2c-dd3d-eeeeee4e4e4e/resourceGroups/MyResourceGroup
 ```
+
+### Combined strings
+
+* A good resource name should also be descriptive, so that it's clear what the resource is for.
+* Bicep has a feature called string interpolation that lets you combine strings.
+
+```Bicep
+param storageAccountName string = 'toylaunch${uniqueString(resourceGroup().id)}'
+```
+
+* `toylaunch` is a hard-coded string that helps anyone who looks at the deployed resource in Azure to understand the storage account's purpose.
+* `${uniqueString(resourceGroup().id)}` is a way of telling Bicep to evaluate the output of the `uniqueString(resourceGroup().id)` function, then concatenate it into the string.
+
+---
+
+### Selecting SKUs (Stock Keeping Unit) (specific configuration or tier of a service or resource) for resources
+
+* A list of allowed values for the environmentType parameter. Bicep won't let anyone deploy the Bicep file unless they provide one of these values.
+
+```Bicep
+@allowed([
+  'nonprod'
+  'prod'
+])
+param environmentType string
+```
+
+* Create variables that determine the SKUs to use for the storage account and App Service plan based on the environment:
+
+```Bicep
+var storageAccountSkuName = (environmentType == 'prod') ? 'Standard_GRS' : 'Standard_LRS'
+var appServicePlanSkuName = (environmentType == 'prod') ? 'P2V3' : 'F1'
+```
+
+* `(environmentType == 'prod')` evaluates to a Boolean (true or false) value, depending on which allowed value is used for `environmentType` parameter.
+* `?` is called a ternary operator, and it evaluates an `if/then` statement. The value after the `?` operator is used if the expression is true. If the expression evaluates to false, the value after the colon (`:`) is used.
