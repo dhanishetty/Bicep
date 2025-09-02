@@ -233,3 +233,36 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
 }
 ```
 
+* You can attach custom tag metadata to the resources that you deploy, which you can use to identify important information about a resource.
+
+```Bicep
+param resourceTags object = {
+  EnvironmentName: 'Test'
+  CostCenter: '1000100'
+  Team: 'Human Resources'
+}}
+```
+* Whenever you define a resource in your Bicep file, you can reuse it wherever you define the tags property:
+
+```Bicep
+resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
+  name: appServicePlanName
+  location: location
+  tags: resourceTags // Here
+  sku: {
+    name: 'S1'
+  }
+}
+
+resource appServiceApp 'Microsoft.Web/sites@' = {
+  name: appServiceAppName
+  location: location
+  tags: resourceTags // Here
+  kind: 'app'
+  properties: {
+    serverFarmId: appServicePlan.id
+  }
+}
+```
+---
+
