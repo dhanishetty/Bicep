@@ -194,6 +194,7 @@ module myModule 'modules/mymodule.bicep' = {
 
 It means:
 
+- The `module` keyword tells Bicep you're about to use another Bicep file as a module.
 - **module myModule 'modules/mymodule.bicep'** → Include another Bicep file called `mymodule.bicep` from the `modules` folder.
 - **name: 'MyModule'** → Give this module deployment the name `MyModule`.
 - **params: { location: location }** → Pass the `location` parameter from the main file into the module.
