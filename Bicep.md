@@ -1,6 +1,8 @@
 For Single comment use `//`
 for multi line comment use `/*   */`
 
+---
+
 1. Infrastructure as code (IaC) automates infrastructure provisioning using a descriptive coding language, ensuring consistent and repeatable deployments.
 2. IaC can be compared to an instruction manual that details the desired configuration of resources.
 3. Benefits of adopting IaC include:
