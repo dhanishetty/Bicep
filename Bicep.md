@@ -174,3 +174,30 @@ The output definition includes a few key parts:
 * `= appServiceAppName (second one)`: The value being assigned to the output, which is usually a variable or property defined earlier in the Bicep file.
 
 ---
+
+### Module
+
+* Bicep modules allow you to organize and reuse your Bicep code by creating smaller units that can be composed into a Bicep file. 
+* Any Bicep file can be used as a module by another template.
+* Imagine you have a Bicep file that deploys application, database, and networking resources for solution A. 
+* You might split this Bicep file into three modules, each of which is focused on its own set of resources.
+* When you want the Bicep file to include a reference to a module file, use the `module` keyword. A module definition looks similar to a resource declaration, but instead of including a resource type and API version, you'll use the module's file name:
+
+```Bicep
+module myModule 'modules/mymodule.bicep' = {
+  name: 'MyModule'
+  params: {
+    location: location
+  }
+}
+```
+
+It means:
+
+- **module myModule 'modules/mymodule.bicep'** → Include another Bicep file called `mymodule.bicep` from the `modules` folder.
+- **name: 'MyModule'** → Give this module deployment the name `MyModule`.
+- **params: { location: location }** → Pass the `location` parameter from the main file into the module.
+
+In short: *You’re reusing another Bicep template and passing it the location parameter.*  
+
+
