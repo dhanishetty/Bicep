@@ -76,3 +76,10 @@ Examples of resource providers include:
   - Locations into which to deploy the resources.
   - Settings that affect the pricing of resources, like their SKUs, pricing tiers, and instance counts.
   - Credentials and information needed to access other systems that aren't defined in the Bicep file.
+
+### Add a parameter
+
+```Bicep
+param appServiceAppName string
+```
+
