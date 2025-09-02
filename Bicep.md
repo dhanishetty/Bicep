@@ -74,7 +74,9 @@ Examples of resource providers include:
 
 ### Parameters and variables
 
-* A `parameter` lets you bring in values from outside the Bicep file.
+* With `parameters`, you can provide information to a Bicep template at deployment time. 
+* You can make a Bicep template flexible and reusable by declaring parameters within your template.
+* `Decorators` provide a way to attach constraints and metadata to a parameter, which helps anyone using your templates to understand what information they need to provide.
 * A `variable` is defined and set within the Bicep file.
 * It's a good idea to use parameters for things that will change between each deployment, like:
   - Resource names that need to be unique.
@@ -201,4 +203,33 @@ It means:
 
 In short: *You’re reusing another Bicep template and passing it the location parameter.*  
 
+---
+
+### Understand parameter types
+
+### Objects
+
+* You can use object parameters to combine structured data together in one place. An object can have multiple properties of different types.
+
+```Bicep
+param appServicePlanSku object = {
+  name: 'F1'
+  tier: 'Free'
+  capacity: 1
+}
+```
+
+- When you reference the parameter in the template, you can select the individual properties of the object by using a dot followed by the name of the property, like in this example:
+
+```Bicep
+resource appServicePlan 'Microsoft.Web/serverfarms@2024-04-01' = {
+  name: appServicePlanName
+  location: location
+  sku: {
+    name: appServicePlanSku.name
+    tier: appServicePlanSku.tier
+    capacity: appServicePlanSku.capacity
+  }
+}
+```
 
