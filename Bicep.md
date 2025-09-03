@@ -384,3 +384,8 @@ param cosmosDBAccountLocations array
 }
 ```
 
+* The `parameters` section lists each parameter and the value you want to use. The parameter value must be specified as an object. The object has a property called `value` that defines the actual parameter value to use.
+
+- Generally, you'll create a parameters file for each environment. 
+- It's a good practice to include the environment name in the name of the parameters file. 
+- For example, you might have a parameters file named `main.parameters.dev.json` for your development environment and one named `main.parameters.production.json` for your production environment.
