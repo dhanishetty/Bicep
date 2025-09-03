@@ -860,8 +860,15 @@ resource virtualNetworks 'Microsoft.Network/virtualNetworks@2024-05-01' = [for (
 ```
 **When you deploy the Bicep file, you get the following virtual networks and subnets:**
 
-Virtual network nameLocationAddress prefixSubnetsvnet-westeuropewesteurope10.0.0.0/1610.0.1.0/24, 10.0.2.0/24| vnet-eastus2          | eastus2    | 10.1.0.0/16      | 10.1.1.0/24, 10.1.2.0/24    |
-| vnet-eastasia         | eastasia   | 10.2.0.0/16      | 10.2.1.0/24, 10.2.2.0/24    |
+Here’s the table based on your provided data:
+
+| Virtual network name | Location    | Address prefix   | Subnets                      |
+|-----------------------|------------|------------------|-----------------------------|
+| vnet-westeurope      | westeurope | 10.0.0.0/16      | 10.0.1.0/24, 10.0.2.0/24    |
+| vnet-eastus2         | eastus2    | 10.1.0.0/16      | 10.1.1.0/24, 10.1.2.0/24    |
+| vnet-eastasia        | eastasia   | 10.2.0.0/16      | 10.2.1.0/24, 10.2.2.0/24    |
+
+
 ---
 
 
