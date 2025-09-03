@@ -447,3 +447,11 @@ New-AzResourceGroupDeployment `
 * `location` = 	Value is the resource group's location. =	The Bicep file specifies this parameter as a default value, and it's not overridden.
 * `appServicePlanSku` = Value of an object with a `name` property set to `P1v3` and a `tier` of `PremiumV3`.	The default value in the Bicep file is overridden by the parameters file.
 * `appServicePlanInstanceCount`	= value is `5`	= The value specified at deployment time overrides the default value and the value in the parameters file.
+
+---
+
+### Secure your parameters
+
+* Sometimes you need to pass sensitive values into your deployments, like passwords and API keys. But you need to ensure these values are protected.
+
+**The best approach is to avoid using credentials entirely. Managed identities for Azure resources can enable the components of your solution to securely communicate with one another without any credentials. Managed identities aren't available for every resource, but it's a good idea to use them wherever you can. Where you can't, you can use the approaches described here.**
