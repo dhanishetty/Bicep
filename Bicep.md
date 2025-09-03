@@ -884,6 +884,50 @@ var items = [for i in range(1, 5): 'item${i}']
 * Here's how to use variable loops to create a `subnets` property:
 
 
+- This example illustrates an effective use for variable loops: 
+- turning a parameter that has simple, easy-to-understand values into a more complex object that corresponds to the Azure resource's required definition. 
+- You can use variable loops to enable parameters to specify only the key information that will change for each item in the list. 
+- You can then use Bicep expressions or default values to set other required properties for the resource.
+
+```Bicep
+param addressPrefix string = '10.10.0.0/16'
+param subnets array = [
+  {
+    name: 'frontend'
+    ipAddressRange: '10.10.0.0/24'
+  }
+  {
+    name: 'backend'
+    ipAddressRange: '10.10.1.0/24'
+  }
+]
+
+var subnetsProperty = [for subnet in subnets: {
+  name: subnet.name
+  properties: {
+    addressPrefix: subnet.ipAddressRange
+  }
+}]
+
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-05-01' = {
+  name: 'teddybear'
+  location: resourceGroup().location
+  properties:{
+    addressSpace:{
+      addressPrefixes:[
+        addressPrefix
+      ]
+    }
+    subnets: subnetsProperty
+  }
+}
+```
+
+
+---
+### Output loops
+
+
 
 
 
