@@ -731,6 +731,143 @@ resource sqlServers 'Microsoft.Sql/servers@2024-05-01-preview' = [for (location,
 ---
 ### Filter items with loops
 
+* In some situations, you might want to deploy resources by using copy loops combined with conditions. You can do this by combining the `if` and `for` keywords.
+* In the following example, the code uses an array parameter to define a set of logical servers. A condition is used with the copy loop to deploy the servers only when the `environmentName` property of the loop object equals `Production`:
+
+```Bicep
+param sqlServerDetails array = [
+  {
+    name: 'sqlserver-we'
+    location: 'westeurope'
+    environmentName: 'Production'
+  }
+  {
+    name: 'sqlserver-eus2'
+    location: 'eastus2'
+    environmentName: 'Development'
+  }
+  {
+    name: 'sqlserver-eas'
+    location: 'eastasia'
+    environmentName: 'Production'
+  }
+]
+
+resource sqlServers 'Microsoft.Sql/servers@2024-05-01-preview' = [for sqlServer in sqlServerDetails: if (sqlServer.environmentName == 'Production') {
+  name: sqlServer.name
+  location: sqlServer.location
+  properties: {
+    administratorLogin: administratorLogin
+    administratorLoginPassword: administratorLoginPassword
+  }
+  tags: {
+    environment: sqlServer.environmentName
+  }
+}]
+```
+* If you deployed the preceding example, you'd see two logical servers, `sqlserver-we` and `sqlserver-eas`, but not `sqlserver-eus2`, because that object's environmentName property doesn't match Production.
+
+---
+### Control loop execution
+
+* In some cases, you might need to deploy resources in loops sequentially instead of in parallel.
+* For example, if you have lots of Azure App Service apps in your production environment, you might want to deploy changes to only a small number at a time to prevent the updates from restarting all of them at the same time.
+* You can control the way your copy loops run in Bicep by using the `@batchSize` decorator. Put the decorator on the resource or module declaration with the `for` keyword.
+
+**All the resources in the following loop will be deployed at the same time, in parallel:**
+
+```Bicep
+resource appServiceApp 'Microsoft.Web/sites@2024-04-01' = [for i in range(1,3): {
+  name: 'app${i}'
+  // ...
+}]
+```
+* Now let's apply the `@batchSize` decorator with a value of `2`. When you deploy the file, Bicep will deploy in batches of two:
+* You can also tell Bicep to run the loop sequentially by setting the `@batchSize` to `1`:
+
+**Bicep waits for each complete batch to finish before it moves on to the next. In the preceding example, if `app2` finishes its deployment before app1, Bicep waits until `app1` finishes before it starts to deploy `app3`.**
+
+---
+
+### Use loops with resource properties
+
+* You can use loops to help set resource properties. 
+* For example, when you deploy a virtual network, you need to specify its subnets. 
+* A subnet has to have two pieces of important information: 
+    - a name and an address prefix. 
+* You can use a parameter with an array of objects so that you can specify different subnets for each environment:
+
+```Bicep
+param subnetNames array = [
+  'api'
+  'worker'
+]
+
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-05-01' = {
+  name: 'teddybear'
+  location: resourceGroup().location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '10.0.0.0/16'
+      ]
+    }
+    subnets: [for (subnetName, i) in subnetNames: {
+      name: subnetName
+      properties: {
+        addressPrefix: '10.0.${i}.0/24'
+      }
+    }]
+  }
+}
+```
+---
+### Nested loops
+
+* For your toy company, you need to deploy virtual networks in every country/region where the toy will be launched. 
+* Every virtual network needs a different address space and two subnets. 
+* Let's start by deploying the virtual networks in a loop:
+* This loop deploys the virtual networks for each location, and it sets the addressPrefix for the virtual network by using the loop index to ensure each virtual network gets a different address prefix.
+* You can use a nested loop to deploy the subnets within each virtual network:
+* The nested loop uses the range() function to create two subnets.
+
+```Bicep
+param locations array = [
+  'westeurope'
+  'eastus2'
+  'eastasia'
+]
+
+var subnetCount = 2
+
+resource virtualNetworks 'Microsoft.Network/virtualNetworks@2024-05-01' = [for (location, i) in locations : {
+  name: 'vnet-${location}'
+  location: location
+  properties: {
+    addressSpace:{
+      addressPrefixes:[
+        '10.${i}.0.0/16'
+      ]
+    }
+    subnets: [for j in range(1, subnetCount): {
+      name: 'subnet-${j}'
+      properties: {
+        addressPrefix: '10.${i}.${j}.0/24'
+      }
+    }]
+  }
+}]
+```
+**When you deploy the Bicep file, you get the following virtual networks and subnets:**
+
+Virtual network nameLocationAddress prefixSubnetsvnet-westeuropewesteurope10.0.0.0/1610.0.1.0/24, 10.0.2.0/24vnet-eastus2eastus210.1.0.0/1610.1.1.0/24, 10.1.2.0/24| vnet-eastasia         | eastasia  | 10.2.0.0/16   | 10.2.1.0/24, 10.2.2.0/24        |
+
+
+---
+
+
+
+
 
 
 
