@@ -469,3 +469,10 @@ param sqlServerAdministratorLogin string
 @secure()
 param sqlServerAdministratorPassword string
 ```
+### Avoid using parameters files for secrets
+
+* As Parameters files are often saved to a centralized version control system, like Git. 
+
+### Integrate with Azure Key Vault
+
+
