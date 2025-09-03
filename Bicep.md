@@ -871,6 +871,17 @@ Here’s the table based on your provided data:
 
 ---
 
+### Variable loops
+
+* By using variable loops, you can create an array, which you can then use through your Bicep file. As you do with other loops, you use the `for` keyword to create a variable loop:
+* The following example creates an array that contains the values `item1`, `item2`, `item3`, `item4`, and `item5`.
+
+```Bicep
+var items = [for i in range(1, 5): 'item${i}']
+```
+
+* You'd ordinarily use variable loops to create more complex objects that you could then use within a resource declaration. 
+* Here's how to use variable loops to create a `subnets` property:
 
 
 
