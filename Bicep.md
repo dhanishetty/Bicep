@@ -344,5 +344,43 @@ param cosmosDBAccountLocations array
 ```
 
 ---
+---
 
-Good
+### Create parameters files
+
+* Parameters files make it easy to specify parameter values together as a set.
+* parameters files are created by using a Bicep parameters file with the .bicepparam file extension or a JSON parameters file that contains the parameter values.
+* You can supply a parameters file when you deploy your Bicep template.
+
+
+```Bicep
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appServicePlanInstanceCount": {
+      "value": 3
+    },
+    "appServicePlanSku": {
+      "value": {
+        "name": "P1v3",
+        "tier": "PremiumV3"
+      }
+    },
+    "cosmosDBAccountLocations": {
+      "value": [
+        {
+          "locationName": "australiaeast"
+        },
+        {
+          "locationName": "southcentralus"
+        },
+        {
+          "locationName": "westeurope"
+        }
+      ]
+    }
+  }
+}
+```
+
