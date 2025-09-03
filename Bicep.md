@@ -400,3 +400,7 @@ New-AzResourceGroupDeployment `
   -TemplateFile main.bicep `
   -TemplateParameterFile main.parameters.json
 ```
+
+```Bicep
+New-AzResourceGroupDeployment -Name main -TemplateFile main.bicep -TemplateParameterFile main.parameters.json
+```
