@@ -548,3 +548,144 @@ module applicationModule 'application.bicep' = {
 * When you deploy a resource in Bicep, you can provide the `if` keyword followed by a condition. 
 * The condition should resolve to a Boolean (true or false) value. 
 * If the value is true, the resource is deployed. If the value is false, the resource is not deployed.
+* 
+
+- The following code deploys a storage account only when the `deployStorageAccount` parameter is set to `true`:
+
+```Bicep
+param deployStorageAccount bool
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = if (deployStorageAccount) {
+  name: 'teddybearstorage'
+  location: resourceGroup().location
+  kind: 'StorageV2'
+  // ...
+}
+```
+
+### Use expressions as conditions
+
+* In the following example, the code deploys a SQL auditing resource only when the `environmentName` parameter value is equal to `Production`:
+
+```Bicep
+@allowed([
+  'Development'
+  'Production'
+])
+param environmentName string
+
+resource auditingSettings 'Microsoft.Sql/servers/auditingSettings@2024-05-01-preview' = if (environmentName == 'Production') {
+  parent: server
+  name: 'default'
+  properties: {
+  }
+}
+```
+* It's usually a good idea to create a variable for the expression that you're using as a condition. That way, your Bicep file is easier to understand and read. Here's an example:
+
+```Bicep
+@allowed([
+  'Development'
+  'Production'
+])
+param environmentName string
+
+var auditingEnabled = environmentName == 'Production'
+
+resource auditingSettings 'Microsoft.Sql/servers/auditingSettings@2024-05-01-preview' = if (auditingEnabled) {
+  parent: server
+  name: 'default'
+  properties: {
+  }
+}
+```
+
+---
+### Depend on conditionally deployed resources
+
+* When you deploy resources conditionally, you sometimes need to be aware of how Bicep evaluates the dependencies between them.
+
+```Bicep
+@allowed([
+  'Development'
+  'Production'
+])
+param environmentName string
+param location string = resourceGroup().location
+param auditStorageAccountName string = 'bearaudit${uniqueString(resourceGroup().id)}'
+
+var auditingEnabled = environmentName == 'Production'
+var storageAccountSkuName = 'Standard_LRS'
+
+resource auditStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = if (auditingEnabled) {
+  name: auditStorageAccountName
+  location: location
+  sku: {
+    name: storageAccountSkuName
+  }
+  kind: 'StorageV2'
+}
+
+resource auditingSettings 'Microsoft.Sql/servers/auditingSettings@2024-05-01-preview' = if (auditingEnabled) {
+  parent: server
+  name: 'default'
+  properties: {
+  }
+}
+```
+* Notice that the storage account has a condition too. This means that it won't be deployed for non-production environments either. The SQL auditing settings resource can now refer to the storage account details:
+
+```Bicep
+resource auditingSettings 'Microsoft.Sql/servers/auditingSettings@2024-05-01-preview' = if (auditingEnabled) {
+  parent: server
+  name: 'default'
+  properties: {
+    state: 'Enabled'
+    storageEndpoint: environmentName == 'Production' ? auditStorageAccount.properties.primaryEndpoints.blob : ''
+    storageAccountAccessKey: environmentName == 'Production' ? listKeys(auditStorageAccount.id, auditStorageAccount.apiVersion).keys[0].value : ''
+  }
+}
+```
+
+* Notice that this Bicep code uses the question mark (?) operator within the storageEndpoint and storageAccountAccessKey properties. 
+* When the Bicep code is deployed to a production environment, the expressions are evaluated to the details from the storage account. 
+* When the code is deployed to a non-production environment, the expressions evaluate to an empty string ('').
+
+* You might wonder why this code is necessary, because auditingSettings and auditStorageAccount both have the same condition, and so you'll never need to deploy a SQL auditing settings resource without a storage account. 
+* Although this is true, Azure Resource Manager evaluates the property expressions before the conditionals on the resources. 
+* That means that if the Bicep code doesn't have this expression, the deployment will fail with a ResourceNotFound error.
+
+**You can't define two resources with the same name in the same Bicep file and then conditionally deploy only one of them. The deployment will fail, because Resource Manager views this as a conflict.**
+
+---
+### Deploy multiple resources by using loops
+
+### Use copy loops
+
+* When you define a resource or a module in a Bicep file, you can use the `for` keyword to create a loop. 
+* Place the `for` keyword in the resource declaration, then specify how you want Bicep to identify each item in the loop.
+
+
+```Bicep
+param storageAccountNames array = [
+  'saauditus'
+  'saauditeurope'
+  'saauditapac'
+]
+
+resource storageAccountResources 'Microsoft.Storage/storageAccounts@2023-05-01' = [for storageAccountName in storageAccountNames: {
+  name: storageAccountName
+  location: resourceGroup().location
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+}]
+```
+
+* Bicep requires you put an opening bracket (`[`) character before the for keyword, and a closing bracket (`]`) character after the resource definition.
+
+---
+
+### Loop based on a count
+
