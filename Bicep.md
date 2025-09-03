@@ -509,3 +509,42 @@ param sqlServerAdministratorPassword string
 }
 ```
 * Notice that instead of specifying a `value` for each of the parameters, this file has a `reference` object, which contains details of the key vault and secret.
+
+**Your key vault must be configured to allow Resource Manager to access the data in the key vault during template deployments. Also, the user who deploys the template must have permission to access the key vault.**
+
+---
+
+### Use Key Vault with modules
+
+* Modules may have parameters that accept secret values, and you can use Bicep's Key Vault integration to provide these values securely.
+
+```Bicep
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: keyVaultName
+}
+
+module applicationModule 'application.bicep' = {
+  name: 'application-module'
+  params: {
+    apiKey: keyVault.getSecret('ApiKey')
+  }
+}
+```
+
+* Notice that in this Bicep file, the Key Vault resource is referenced by using the `existing `keyword. 
+* The keyword tells Bicep that the Key Vault already exists, and this code is a reference to that vault. 
+* Bicep won't redeploy it. 
+* Also, notice that the module's code uses the `getSecret()` function in the value for the module's `apiKey` parameter. 
+* This is a special Bicep function that can only be used with secure module parameters.
+
+---
+---
+### Deploy resources conditionally
+
+* You can use conditions in your Bicep code to deploy resources only when specific constraints are in place.
+
+### Use basic conditions
+
+* When you deploy a resource in Bicep, you can provide the `if` keyword followed by a condition. 
+* The condition should resolve to a Boolean (true or false) value. 
+* If the value is true, the resource is deployed. If the value is false, the resource is not deployed.
