@@ -345,4 +345,4 @@ param cosmosDBAccountLocations array
 
 ---
 
-
+Good
