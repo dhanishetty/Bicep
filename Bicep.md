@@ -403,3 +403,47 @@ New-AzResourceGroupDeployment `
 
 ---
 ### Override parameter values
+
+* Here's an example Bicep file that defines three parameters, each with default values:
+
+```Bicep
+param location string = resourceGroup().location
+param appServicePlanInstanceCount int = 1
+param appServicePlanSku object = {
+  name: 'F1'
+  tier: 'Free'
+}
+```
+
+* Let's look at a parameters file that overrides the value of two of the parameters but doesn't specify a value for the `location` parameter:
+
+```Bicep
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appServicePlanInstanceCount": {
+      "value": 3
+    },
+    "appServicePlanSku": {
+      "value": {
+        "name": "P1v3",
+        "tier": "PremiumV3"
+      }
+    }
+  }
+}
+```
+
+* When you create the deployment, you override one of the parameter values. You specify the parameter name as if it's an argument to the cmdlet:
+
+```Bicep
+New-AzResourceGroupDeployment `
+  -Name main `
+  -TemplateFile main.bicep `
+  -TemplateParameterFile main.parameters.json `
+  -appServicePlanInstanceCount 5
+```
+* `location` = 	Value is the resource group's location. =	The Bicep file specifies this parameter as a default value, and it's not overridden.
+* `appServicePlanSku` = Value of an object with a `name` property set to `P1v3` and a `tier` of `PremiumV3`.	The default value in the Bicep file is overridden by the parameters file.
+* `appServicePlanInstanceCount`	= value is `5`	= The value specified at deployment time overrides the default value and the value in the parameters file.
