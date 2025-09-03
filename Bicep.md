@@ -927,9 +927,45 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2024-05-01' = {
 ---
 ### Output loops
 
+* You can use Bicep outputs to provide information from your deployments back to the user or tool that started the deployment. 
 
 
+```Bicep
+var items = [
+  'item1'
+  'item2'
+  'item3'
+  'item4'
+  'item5'
+]
 
+output outputItems array = [for i in range(0, length(items)): items[i]]
+```
+Second Example
+
+```Bicep
+param locations array = [
+  'westeurope'
+  'eastus2'
+  'eastasia'
+]
+
+resource storageAccounts 'Microsoft.Storage/storageAccounts@2023-05-01' = [for location in locations: {
+  name: 'toy${uniqueString(resourceGroup().id, location)}'
+  location: location
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+}]
+
+output storageEndpoints array = [for i in range(0, length(locations)): {
+  name: storageAccounts[i].name
+  location: storageAccounts[i].location
+  blobEndpoint: storageAccounts[i].properties.primaryEndpoints.blob
+  fileEndpoint: storageAccounts[i].properties.primaryEndpoints.file
+}]
+```
 
 
 
