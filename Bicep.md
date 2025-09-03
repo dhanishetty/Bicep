@@ -475,4 +475,37 @@ param sqlServerAdministratorPassword string
 
 ### Integrate with Azure Key Vault
 
+* Integrate your Bicep templates with Key Vault by using a parameters file with a reference to a `Key Vault secret`.
+* You can use this feature by referring to the key vault and secret in your parameters file.
+* The value is never exposed because you only reference its `identifier`, which by itself isn't anything secret. 
+* When you deploy the template, Azure Resource Manager will contact the key vault and retrieve the data.
 
+**You can refer to secrets in key vaults that are located in a different resource group or subscription from the one you're deploying to.**
+
+* Here's a parameters file that uses Key Vault references to look up the SQL logical server administrator login and password to use:
+
+```Bicep
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sqlServerAdministratorLogin": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/f0750bbe-ea75-4ae5-b24d-a92ca601da2c/resourceGroups/PlatformResources/providers/Microsoft.KeyVault/vaults/toysecrets"
+        },
+        "secretName": "sqlAdminLogin"
+      }
+    },
+    "sqlServerAdministratorPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/f0750bbe-ea75-4ae5-b24d-a92ca601da2c/resourceGroups/PlatformResources/providers/Microsoft.KeyVault/vaults/toysecrets"
+        },
+        "secretName": "sqlAdminLoginPassword"
+      }
+    }
+  }
+}
+```
+* Notice that instead of specifying a `value` for each of the parameters, this file has a `reference` object, which contains details of the key vault and secret.
