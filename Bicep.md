@@ -454,4 +454,18 @@ New-AzResourceGroupDeployment `
 
 * Sometimes you need to pass sensitive values into your deployments, like passwords and API keys. But you need to ensure these values are protected.
 
-**The best approach is to avoid using credentials entirely. Managed identities for Azure resources can enable the components of your solution to securely communicate with one another without any credentials. Managed identities aren't available for every resource, but it's a good idea to use them wherever you can. Where you can't, you can use the approaches described here.**
+**The best approach is to avoid using credentials entirely. `Managed identities` for Azure resources can enable the components of your solution to securely communicate with one another without any credentials. `Managed identities` aren't available for every resource, but it's a good idea to use them wherever you can. Where you can't, you can use the approaches described here.**
+
+### Define secure parameters
+
+* The `@secure` decorator can be applied to string and object parameters that contain secret values. 
+* When you define a parameter as `@secure`, Azure won't make the parameter values available in the deployment logs.
+* If you create the deployment interactively by using the Azure CLI or Azure PowerShell and you need to enter the values during the deployment, the terminal won't display the text on your screen.
+
+```Bicep
+@secure()
+param sqlServerAdministratorLogin string
+
+@secure()
+param sqlServerAdministratorPassword string
+```
