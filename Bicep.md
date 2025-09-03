@@ -689,3 +689,50 @@ resource storageAccountResources 'Microsoft.Storage/storageAccounts@2023-05-01' 
 
 ### Loop based on a count
 
+* Bicep provides the `range()` function, which creates an array of numbers. 
+* For example, if you need to create four storage accounts called `sa1` through `sa4`, you could use a resource definition like this:
+
+```Bicep
+resource storageAccountResources 'Microsoft.Storage/storageAccounts@2023-05-01' = [for i in range(1,4): {
+  name: 'sa${i}'
+  location: resourceGroup().location
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
+  }
+}]
+```
+* When you use the `range()` function, you specify its start value and the number of values you want to create. 
+* For example, if you want to create storage accounts with the names `sa0`, `sa1`, and `sa2`, you'd use the function `range(0,3)`.
+
+---
+
+### Access the iteration index
+
+* With Bicep, you can iterate through arrays and retrieve the index of the current element in the array. 
+* For example, let's say you want to create a logical server in each location that's specified by an array, and you want the server names to be `sqlserver-1`, `sqlserver-2`, and so on. You could achieve this by using the following Bicep code:
+
+```Bicep
+param locations array = [
+  'westeurope'
+  'eastus2'
+  'eastasia'
+]
+
+resource sqlServers 'Microsoft.Sql/servers@2024-05-01-preview' = [for (location, i) in locations: {
+  name: 'sqlserver-${i+1}'
+  location: location
+  properties: {
+    administratorLogin: administratorLogin
+    administratorLoginPassword: administratorLoginPassword
+  }
+}]
+```
+---
+### Filter items with loops
+
+
+
+
+
+
