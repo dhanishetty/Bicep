@@ -389,3 +389,14 @@ param cosmosDBAccountLocations array
 - Generally, you'll create a parameters file for each environment. 
 - It's a good practice to include the environment name in the name of the parameters file. 
 - For example, you might have a parameters file named `main.parameters.dev.json` for your development environment and one named `main.parameters.production.json` for your production environment.
+
+---
+
+### Use parameters files at deployment time
+
+```Bicep
+New-AzResourceGroupDeployment `
+  -Name main `
+  -TemplateFile main.bicep `
+  -TemplateParameterFile main.parameters.json
+```
