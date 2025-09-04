@@ -988,7 +988,12 @@ output storageEndpoints array = [for i in range(0, length(locations)): {
 * When you deploy a Bicep file by using the Azure CLI or Azure PowerShell, you can optionally specify the name of the deployment. 
 * If you don't specify a name, the Azure CLI or Azure PowerShell automatically creates a deployment name for you from the file name of the template. 
 * For example, if you deploy a file named main.bicep, the default deployment name is `main`.
-* When you use modules, Bicep creates a separate deployment for every module. 
+* When you use modules, Bicep creates a separate deployment for every module with the real name you mentioned not the internal reference name. so the module deployement name would be `my-storage` in the below code. 
+  ```Bicep
+  module storage1 'modules/stor.bicep' = {
+    name: 'my-storage'
+  }
+  ``` 
 * The name property that you specify for the module becomes the name of the deployment. 
 * When you deploy a Bicep file that contains a module, multiple deployment resources are created: one for the parent template and one for each module.
 * You can list and view the details of deployment resources to monitor the status of your Bicep deployments or to view history of deployments. 
@@ -1008,4 +1013,10 @@ output storageEndpoints array = [for i in range(0, length(locations)): {
 
 ### Add parameters and outputs to modules
 
-https://learn.microsoft.com/en-us/training/modules/create-composable-bicep-files-using-modules/3-add-parameters-outputs-modules
+* It's often better to leave the default value on the parent template and remove it from the module.
+
+**Don't use outputs for secret values. Outputs are logged as part of the deployment history, so they're not appropriate for secure values. You can instead consider one of the following options:**
+
+  * Use an output to provide the resource's name. Then the parent template can create an existing resource with that name and can look up the secure value dynamically.
+  * Write the value to an Azure Key Vault secret. Have the parent template read the secret from the vault when it needs it.
+
