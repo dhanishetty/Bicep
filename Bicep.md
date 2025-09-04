@@ -966,7 +966,45 @@ output storageEndpoints array = [for i in range(0, length(locations)): {
   fileEndpoint: storageAccounts[i].properties.primaryEndpoints.file
 }]
 ```
+---
+---
+### Encapsulation
 
+* Modules help you keep related resource definitions together. 
+* For example, when you define an Azure Functions app, you typically deploy the app, a hosting plan for the app, and a storage account for the app's metadata. 
+* These three components are defined separately, but they represent a logical grouping of resources, so it might make sense to define them as a module.
 
+---
 
+### Deployments
+
+* In Azure, a `deployment` is a special resource that represents a deployment operation. 
+* Deployments are Azure resources that have the resource type `Microsoft.Resources/deployments`. 
+* When you submit a Bicep deployment, you create or update a deployment resource. 
+* Similarly, when you create resources in the Azure portal, the portal creates a deployment resource on your behalf.
+* However, not all changes to Azure resources create or use deployments. 
+* For example, when you use the Azure portal to modify an existing resource, it generally doesn't create a deployment to make the change. 
+* When you use third-party tools like Terraform to deploy or configure your resources, they might not create deployments.
+* When you deploy a Bicep file by using the Azure CLI or Azure PowerShell, you can optionally specify the name of the deployment. 
+* If you don't specify a name, the Azure CLI or Azure PowerShell automatically creates a deployment name for you from the file name of the template. 
+* For example, if you deploy a file named main.bicep, the default deployment name is `main`.
+* When you use modules, Bicep creates a separate deployment for every module. 
+* The name property that you specify for the module becomes the name of the deployment. 
+* When you deploy a Bicep file that contains a module, multiple deployment resources are created: one for the parent template and one for each module.
+* You can list and view the details of deployment resources to monitor the status of your Bicep deployments or to view history of deployments. 
+* However, when you reuse the same name for a deployment, Azure overwrites the last deployment with the same name. 
+* If you need to maintain the deployment history, ensure that you use a unique name for every deployment. 
+* You might include the date and time of the deployment in the name to help make it unique.
+
+---
+
+### Generated JSON ARM templates
+
+* When you deploy a Bicep file, Bicep converts it to a JSON ARM template. This conversion is also called `transpilation`.
+* The modules that the template uses are embedded into the JSON file. 
+* Regardless of how many modules you include in your template, only a single JSON file is created.
+
+---
+
+### Add parameters and outputs to modules
 
