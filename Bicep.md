@@ -1008,3 +1008,4 @@ output storageEndpoints array = [for i in range(0, length(locations)): {
 
 ### Add parameters and outputs to modules
 
+https://learn.microsoft.com/en-us/training/modules/create-composable-bicep-files-using-modules/3-add-parameters-outputs-modules
