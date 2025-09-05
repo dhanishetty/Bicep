@@ -34,3 +34,57 @@
 
 ### Triggers
 
+* To instruct Azure Pipelines when to run your pipeline, you create a trigger. 
+* You can choose from multiple types of triggers.
+
+---
+
+### Steps
+
+* A step represents a single operation that the pipeline performs. 
+* A step is similar to an individual command that you run in Bash or PowerShell. 
+* You define the sequence and all the details of each step in your pipeline YAML file.
+
+**Azure Pipelines offers two types of steps:**
+
+**1. Scripts:** Use a script step to run a single command or a sequence of commands in Bash, PowerShell, or the Windows command shell.
+**2. Tasks:** A task is a convenient way to access many different capabilities without writing script statements. 
+  * For example, a built-in task can run the Azure CLI and Azure PowerShell cmdlets to test your code or upload files to an FTP server. 
+  * Anyone can write a task and share it with other users by publishing the task in the Visual Studio Marketplace. 
+  * A large set of commercial and open-source tasks are available.
+
+* Script statements offer more control over what's executed.
+* Tasks don't have to write and manage scripts.
+
+---
+
+### Jobs
+
+* A Job represents an ordered set of steps.
+* You can set each job to run on a different agent pool. 
+* Running jobs on different agent pools is useful when you build and deploy solutions that need to use different operating systems in different parts of the job pipeline.
+
+
+- You also can use stages in Azure Pipelines to divide your pipeline into logical phases and add manual checks at various points in your pipeline's execution.
+
+---
+
+### Basic pipeline example
+
+```YAML
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+- job:
+  steps:
+  - script: echo Hello, world!
+    displayName: 'Run a one-line script'
+  
+  - script: |
+      echo We'll add more steps soon.
+      echo For example, we'll add our Bicep deployment step.
+    displayName: 'Run a multi-line script'
+```
