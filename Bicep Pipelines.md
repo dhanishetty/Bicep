@@ -184,3 +184,12 @@ After you create a variable, you'll use a specific syntax to refer to the variab
     overrideParameters: >
       -environmentType $(EnvironmentType) # variable
 ```
+
+---
+
+### System variables
+
+Azure Pipelines also uses system `variables`. System variables contain predefined information you might want to use in your pipeline. Here are some of the system variables you can use in your pipeline:
+
+    * `Build.BuildNumber` is the unique identifier for your pipeline run. Despite its name, the `Build.BuildNumber` value often is a string, and not a number. You might use this variable to name your Azure deployment so you can track the deployment back to the specific pipeline run that triggered it.
+    * `Agent.BuildDirectory` is the path on your agent machine's file system where your pipeline run's files are stored. This information can be useful when you want to reference files on the build agent.
