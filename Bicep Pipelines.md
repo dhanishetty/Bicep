@@ -88,3 +88,30 @@ jobs:
       echo For example, we'll add our Bicep deployment step.
     displayName: 'Run a multi-line script'
 ```
+
+**Let's look at each part of the file in detail:**
+
+* `trigger` tells your pipeline when to execute. In this case, `trigger: none` tells Azure Pipelines that you want to manually trigger the pipeline.
+* `pool` instructs the pipeline which agent pool to use when it runs the pipeline steps. In this example, the pipeline runs on an agent running the Ubuntu operating system, which comes from the pool of Microsoft-hosted agents.
+* `jobs` groups together all the jobs in your pipeline.
+* `job` tells your pipeline that you have a single job.
+* `steps` lists the sequence of actions to run in the job. The example YAML includes two steps. Both steps run a simple script to echo some text. Each step has a `displayName` value, which is a human-readable name for the step. You'll see the display name when you look at the pipeline logs. To create a multi-line script step, use the pipe character (`|`) as shown in the example. After your step executes, you'll see the outputs in the pipeline log.
+
+
+---
+### Deploy Bicep files by using a pipeline
+
+### Service connections
+
+* Deployment by pipeline requires authentication. 
+* Pipelines authenticate to Azure by using a service principal. 
+* A service principal's credentials consist of an application ID and a secret, which usually is a key or a certificate. 
+* In Azure Pipelines, you use a service connection to securely store these credentials so that your pipeline can use them. A service connection also includes some other information to help your pipeline identify the Azure environment that you want to deploy to.
+* we'll use Azure DevOps to automatically create a service principal when it creates a service connection.
+* When you create a service connection, you **name** the connection.
+* Steps refer to the service connection by using this name, so your pipeline YAML code doesn't need to contain secret information.
+* When your pipeline starts, the agent that's running your deployment steps has access to the service connection, including its credentials.
+* A pipeline step uses the credentials to sign in to Azure, just like you sign in yourself. Then, the actions that are defined in the step use the service principal's identity.
+
+
+
