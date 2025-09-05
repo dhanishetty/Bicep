@@ -347,3 +347,10 @@ trigger:
 When your trigger fires, Azure Pipelines ensures that it waits for any active pipeline run to complete. Then, it starts a new run with all of the changes that have accumulated since the last run.
 
 ---
+---
+
+### Authenticate your Azure deployment pipeline by using service principals
+
+* Service principals provide a way to authenticate pipelines, applications, and software.
+
+
