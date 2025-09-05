@@ -192,3 +192,41 @@ After you create a variable, you'll use a specific syntax to refer to the variab
 Azure Pipelines also uses system `variables`. System variables contain predefined information you might want to use in your pipeline. Here are some of the system variables you can use in your pipeline:
   * `Build.BuildNumber` is the unique identifier for your pipeline run. Despite its name, the `Build.BuildNumber` value often is a string, and not a number. You might use this variable to name your Azure deployment so you can track the deployment back to the specific pipeline run that triggered it.
   * `Agent.BuildDirectory` is the path on your agent machine's file system where your pipeline run's files are stored. This information can be useful when you want to reference files on the build agent.
+
+---
+
+### Create variables in your pipeline's YAML file
+
+* Use this option when you have values that aren't secret.
+
+```YAML
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  ServiceConnectionName: 'MyServiceConnection' # Variable
+  EnvironmentType: 'Test' # Variable
+  ResourceGroupName: 'MyResourceGroup' # Variable
+  DeploymentDefaultLocation: 'westus3' # Variable
+
+jobs:
+- job:
+  steps:
+  - task: AzureResourceManagerTemplateDeployment@3
+    inputs:
+      connectedServiceName: $(ServiceConnectionName)
+      location: $(DeploymentDefaultLocation)
+      resourceGroupName: $(ResourceGroupName)
+      csmFile: deploy/main.bicep
+      overrideParameters: >
+        -environmentType $(EnvironmentType)
+```
+
+---
+### Use triggers to control when your pipeline runs
+
+### What is a pipeline trigger?
+
+A **pipeline trigger** is a condition that, when met, automatically runs your pipeline based on rules you create.
