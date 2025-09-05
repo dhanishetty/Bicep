@@ -114,4 +114,44 @@ jobs:
 * A pipeline step uses the credentials to sign in to Azure, just like you sign in yourself. Then, the actions that are defined in the step use the service principal's identity.
 
 
+- You must ensure that your service principal has the permissions it needs to execute your deployment steps. 
+- For example, you might need to assign the service principal the Contributor role for the resource group it deploys your resources to.
 
+### For multiple Connections
+
+* Service connections are created in your Azure DevOps project. 
+* Multiple pipelines can share a single service connection. 
+* However, it's usually a good idea to set up a service connection and the corresponding service principal for each pipeline and each environment you deploy to. 
+* This practice helps increase the security of your pipelines, and it reduces the likelihood of accidentally deploying or configuring resources in a different environment than the one you expect.
+
+- You also can set up your service connection so that it can be used only in specific pipelines. 
+- For example, when you create a service connection that deploys to your website's production environment, it's a good idea to ensure that only your website's pipeline can use this service connection. 
+- Restricting a service connection to specific pipelines stops someone else from accidentally using the same service connection for a different project and potentially causing your production website to go down.
+
+---
+
+### Deploy a Bicep file by using the Azure Resource Group Deployment task
+
+* When you need to deploy a Bicep file from a pipeline, you can use the `Azure Resource Group Deployment` task. Here's an example of how to configure a step to use the task:
+
+```YAML
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    connectedServiceName: 'MyServiceConnection'
+    location: 'westus3'
+    resourceGroupName: Example
+    csmFile: deploy/main.bicep
+    overrideParameters: >
+        -parameterName parameterValue
+```
+
+The first line specifies `AzureResourceManagerTemplateDeployment@3`. It tells Azure Pipelines that the task you want to use for this step is named `AzureResourceManagerTemplateDeployment`, and you want to use version 3 of the task.
+
+When you use the Azure Resource Group Deployment task, you specify inputs to tell the task what to do. Here are some inputs you might specify when you use the task:
+
+* `connectedServiceName` is the name of the service connection to use.
+* `location` needs to be specified even though its value might not be used. The Azure Resource Group Deployment task can also create a resource group for you, and if it does, it needs to know the Azure region in which to create the resource group. In this module, you'll specify the `location` input value, but its value isn't used.
+* `resourceGroupName` specifies the name of the resource group that the Bicep file should be deployed to.
+* `overrideParameters` contains any parameter values you want to pass into your Bicep file at deployment time.
+
+When the task starts, it uses the service connection to sign in to Azure. By the time the task runs the deployment you specified, the task has authenticated. You don't need to run az login.
