@@ -270,4 +270,80 @@ trigger:
     exclude:
     - feature/*
 ```
+---
+### Path filters
 
+* you might have a deploy folder in your repository that contains your `Bicep code` and a separate `docs` folder that contains your documentation files. 
+* You want to trigger your pipeline when anyone makes a change to any of the `Bicep` files in the deploy folder.
+* But you don't want to trigger the pipeline if someone changes only a `docs` folder. 
+* To set up a trigger to respond to changes in a specific folder in your repository, you can use a path filter:
+
+```YAML
+trigger:
+  branches:
+    include:
+    - main
+  paths: # here
+    exclude: # here
+    - docs
+    include: # here
+    - deploy
+```
+
+* Now If someone commits a change that updates only a documentation file, the pipeline doesn't run. 
+* But if someone changes a Bicep file, or even if they change a Bicep file in addition to a documentation file, the trigger runs the pipeline.
+---
+
+### Schedule your pipeline to run automatically
+
+**You can run your pipeline on a set schedule and not in response to a file change.**
+
+* Use the `schedules` keyword instead of `trigger`, and set the frequency by using a cron expression:
+
+```YAML
+schedules:
+- cron: "0 0 * * *" # here
+  displayName: Daily environment restore
+  branches:
+    include:
+    - main
+```
+
+**A cron expression is a specially formatted sequence of characters that sets how often an event will happen. In this example, `0 0 * * *` means run every day at midnight UTC.**
+* You can also set which branch of your repository to use in the scheduled event. When the pipeline starts, it uses the most recent version of the code from the branch you set in the schedule.
+
+---
+
+### Use multiple triggers
+
+* You can combine triggers and schedules, like in this example:
+* The pipeline runs every day at midnight UTC and also whenever a change is pushed to the main branch.
+
+```YAML
+trigger:
+- main
+
+schedules:
+- cron: "0 0 * * *"
+  displayName: Deploy test environment
+  branches:
+    include:
+    - main
+```
+---
+
+### Concurrency control
+
+* In some situations, having multiple concurrent runs of your deployment pipelines, it can be challenging to ensure that your pipeline runs aren't overwriting your Azure resources or configuration in ways that you don't expect.
+* To avoid these problems, you can use the `batch` keyword with a trigger, like in this example:
+
+```YAML
+trigger:
+  batch: true # Here
+  branches:
+    include:
+    - main
+```
+When your trigger fires, Azure Pipelines ensures that it waits for any active pipeline run to complete. Then, it starts a new run with all of the changes that have accumulated since the last run.
+
+---
