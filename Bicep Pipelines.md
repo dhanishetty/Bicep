@@ -230,3 +230,44 @@ jobs:
 ### What is a pipeline trigger?
 
 A **pipeline trigger** is a condition that, when met, automatically runs your pipeline based on rules you create.
+    * You can set triggers to run your pipeline at scheduled intervals. 
+    * You can also set triggers to run your pipeline every time a file in your repository changes. 
+ 
+### Branch triggers
+
+A common type of trigger is a `branch trigger`, also called a `continuous integration trigger` or `CI trigger`.
+  * When you use a branch trigger, every time you make a change to a specific branch, the pipeline runs.
+  * It's common to use this type of trigger against your default or `main` branch, with this code:
+
+```YAML
+trigger:
+- main
+```
+
+### Multiple branches change Trigger
+
+You can set up triggers to run your pipeline on a specific branch or on sets of branches.
+  * you can trigger for a specific release of your project like release/v1, release/v2.
+  * You want to run your pipeline anytime your code changes on a branch that begins with the name release/. You can use the `include` property with a `*` wildcard:
+
+```YAML
+trigger:
+  branches:
+    include: # for specific branches
+    - main # for specific branches
+    - release/* # for specific branches
+```
+
+### Exclude branches
+
+By using the exclude property, you ensure that the pipeline isn't automatically triggered for changes to selected branches:
+
+```YAML
+trigger:
+  branches:
+    include:
+    - '*'
+    exclude:
+    - feature/*
+```
+
