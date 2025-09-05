@@ -154,4 +154,33 @@ When you use the Azure Resource Group Deployment task, you specify inputs to tel
 * `resourceGroupName` specifies the name of the resource group that the Bicep file should be deployed to.
 * `overrideParameters` contains any parameter values you want to pass into your Bicep file at deployment time.
 
-When the task starts, it uses the service connection to sign in to Azure. By the time the task runs the deployment you specified, the task has authenticated. You don't need to run az login.
+When the task starts, it uses the service connection to sign in to Azure. By the time the task runs the deployment you specified, the task has authenticated. You don't need to run `az login`.
+
+### Run Azure CLI and Azure PowerShell commands
+
+* Two of the most useful built-in tasks in Azure Pipelines are the Azure CLI and Azure PowerShell tasks. 
+* You can use these tasks to execute one or more Azure CLI or PowerShell commands.
+
+### Variables
+
+* Use **Variables** to store secrets or values that are different for different deployements and use them with YAML files in pipelines.
+
+### Craete a Variable
+
+* The Azure Pipelines web interface has an editor you can use to create `variables` for your pipeline: 
+* users can override a variable value when they run your pipeline manually.
+
+### Use a variable in your pipeline
+
+After you create a variable, you'll use a specific syntax to refer to the variable in your pipeline's YAML file:
+
+```YAML
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    connectedServiceName: $(ServiceConnectionName) #Variable
+    location: $(DeploymentDefaultLocation) #Variable
+    resourceGroupName: $(ResourceGroupName) #Variable
+    csmFile: deploy/main.bicep
+    overrideParameters: >
+      -environmentType $(EnvironmentType) # variable
+```
