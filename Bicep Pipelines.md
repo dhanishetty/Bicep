@@ -368,4 +368,22 @@ When your trigger fires, Azure Pipelines ensures that it waits for any active pi
 * The application ID is a globally unique ID (GUID). 
 * For pipelines, the credential is usually a strong password called a `key`. Alternatively, you can use a `certificate` as a credential.
 
+---
 
+### Managed identities
+
+* In contrast to the other types of service principals, a managed identity doesn't require that you know or maintain its credentials. 
+* **A managed identity is associated with an Azure resource.** 
+* Azure manages the credentials automatically. 
+* They're a great way for Azure resources to authenticate themselves for situations like automating your Azure management, connecting to databases, and reading secret data from Azure Key Vault.
+
+
+* When you work with pipelines, you usually can't use managed identities. 
+* This is because managed identities require that you own and manage the Azure resources that run your deployments. 
+* When you work with Azure Pipelines, you usually rely on shared infrastructure provided by Microsoft.
+
+---
+There are some situations where pipelines can use managed identities. In Azure Pipelines, you can create a self-hosted agent to run your pipeline's scripts and code by using on your own Azure-based virtual machine. Because you own the virtual machine, you can assign it a managed identity and use it from your pipeline.
+
+However, most of the time your pipelines run by using a hosted agent, which is a server that Microsoft manages. Hosted agents aren't currently compatible with managed identities.
+---
