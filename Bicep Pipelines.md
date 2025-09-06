@@ -353,4 +353,19 @@ When your trigger fires, Azure Pipelines ensures that it waits for any active pi
 
 * Service principals provide a way to authenticate pipelines, applications, and software.
 
+### Types of security principals
+
+**Microsoft Entra ID is the service that manages identities for Azure. Microsoft Entra ID has multiple types of identities, which are also called security principals:**
+  * A `user` represents a human who usually signs in interactively by using a browser. Users often have additional security checks to perform when they sign in, such as multifactor authentication (MFA) and Conditional Access based on their location or network.
+  * A `group` represents a collection of users. Groups don't authenticate directly, but they provide a convenient way to assign permissions to a set of users together.
+  * A `service principal` represents an automated process or system that usually doesn't have a human directly running it.
+  * A `managed identity` is a special type of service principal that's designed for situations where a human isn't involved in the authentication process.
+---
+### Service principals
+
+* It can sign in to Microsoft Entra ID, but there's no human to sign in and interact with the authentication process. 
+* In Microsoft Entra ID, an `application ID` and a `credential` identifies a service principal. 
+* The application ID is a globally unique ID (GUID). 
+* For pipelines, the credential is usually a strong password called a `key`. Alternatively, you can use a `certificate` as a credential.
+
 
