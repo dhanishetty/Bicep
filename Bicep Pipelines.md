@@ -404,9 +404,60 @@ When your trigger fires, Azure Pipelines ensures that it waits for any active pi
   
   >>> Application
 * Microsoft Entra ID has a concept of an `application`, which represents a system, piece of software, process, or some other nonhuman agent. 
-* You can think of a deployment pipeline as an application.
+* You can think of a `deployment pipeline` as an application.
 * When you create an `application` and tell Microsoft Entra ID about it, you create an `object` called an `application registration`. 
 * An application registration **represents** the application in Microsoft Entra ID.
+  
+  >>> Service Principals
+* `Service principals` and `applications` are tightly linked. 
+* Whenever an application registration is added to a `Microsoft Entra tenant`, a `service principal object` is created in that Microsoft Entra tenant. 
+* When you create a service principal, most of the tools that you use also create an application registration at the same time. So you might not notice that there are two different objects.
 
+---
+
+### Create a service principal and key
+
+### Understand how service principals are authenticated
+
+* When a service principal needs to communicate with Azure, it signs in to Microsoft Entra ID. 
+* After Microsoft Entra ID verifies the service principal's identity, it issues a `token` that the client application stores and uses when it makes any requests to Azure.
+* Service principals use two main credentials: 
+  - Keys
+  - Certificates
+
+---
+
+### Keys
+
+* Keys are similar to `passwords`. 
+* However, keys are much longer and more complex. 
+* In fact, for most situations, Microsoft Entra ID generates keys itself to ensure that:
+  - The keys are cryptographically random. That is, they're extremely hard to guess.
+  - Humans don't accidentally use weak passwords as keys.
+* you only need to handle the key briefly when first configuring the `service principal` and your `pipeline`.
+* A single service principal can have `multiple keys` at the same time, but users can't have multiple passwords. 
+* Like passwords, keys have an `expiration date`.
+---
+### Certificates
+
+* Certificates are another way to authenticate service principals. 
+* They're very secure but can be hard to manage.
+* certificates are harder for attackers to steal. 
+* It's also harder to intercept and modify requests that use certificates. 
+* However, certificates require more infrastructure and have some ongoing maintenance overhead.
+
+---
+
+### Work with keys for service principals
+
+* When you create a `service principal`, you generally ask Azure to create a `key` at the same time.
+* Azure shows you the `key` only when you create the service principal.
+  
+### Manage service principals for Azure Pipelines
+
+* Pipeline tools include secure ways to specify your service principal's application ID and key.
+* Never store credentials of any kind in source control. Instead, use `service connections` when you work with Azure Pipelines.
+---
+### Create a service principal and key
 
 
