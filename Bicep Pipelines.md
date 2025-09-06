@@ -460,4 +460,26 @@ When your trigger fires, Azure Pipelines ensures that it waits for any active pi
 ---
 ### Create a service principal and key
 
+* You can use the Azure PowerShell cmdlets to create and manage service principals.
+* The `New-AzADServicePrincipal` cmdlet creates an application registration in Microsoft Entra ID, adds a service principal to your Microsoft Entra tenant, and creates a key for the application registration.
+* This cmdlet accepts several arguments and can optionally assign roles to the service principal.
+
+```PowerShell
+$servicePrincipal = New-AzADServicePrincipal -DisplayName MyPipeline
+```
+When you run this command, Azure PowerShell populates the `servicePrincipal` variable with information about the service principal, including the key:
+
+```PowerShell
+$servicePrincipalKey = $servicePrincipal.PasswordCredentials.SecretText
+```
+You can't get this key again, so be sure to use it immediately or save it somewhere secure.
+
+---
+
+### Identify a service principal
+
+Service principals have several identifiers and names that you use to identify and work with them. The identifiers that you use the most are:
+   * **Application ID**: The application registration has a unique identifier, often called an application ID or sometimes a client ID. You typically use it as the username when the service principal signs in to Azure.
+  * **Object ID**: The application registration and the service principal have their own separate object IDs, which are unique identifiers assigned by Microsoft Entra ID. Occasionally, you'll need to use these object IDs when you manage a service principal.
+  * **Display name**: This is a human-readable name that describes the service principal.
 
