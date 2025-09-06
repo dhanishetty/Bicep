@@ -622,3 +622,205 @@ Let's look at each argument:
 * `principalId` is the service principal's object ID. Make sure you don't use the application ID or the application registration's object ID.
 * `description` is a human-readable description of the role assignment.
 
+---
+---
+
+### Test your Bicep code by using Azure Pipelines
+
+### Understand pipeline stages
+
+* `Stages` help you to divide your pipeline into multiple logical blocks. Each stage can contain one or more `jobs`. Jobs contain an ordered list of `steps` that should be completed, like running command-line scripts.
+
+>>> Continous Integration (CI) and Continous Deployement (CD)
+
+* When you use an automated pipeline, building and testing your code are often called continuous integration (`CI`).
+* Deploying code in an automated pipeline is often called continuous deployment (`CD`).
+
+
+* During CI stages, you check the validity of the changes that have been made to your code.
+* Stages run in a sequence. 
+* You can control how and when each stage runs. 
+* For example, you can configure your CD stages to run only after your CI stages run successfully.
+
+---
+
+### Shifting left
+
+* By using stages, you can verify the quality of your code before you deploy it. 
+* Using these stages is sometimes called `shifting left`.
+
+- Consider a timeline of the activities that you perform when you write code. 
+- The timeline starts with the 
+  * plan 
+  * design 
+  * build
+  * test
+  * deploy
+  * support 
+- If you write them down in line then the closer to the left side of the timeline, the easier, faster, and cheaper it is to fix
+- When you work with tools like Azure DevOps, pull requests typically represent changes that someone on your team wants to make to the code on your main branch.
+
+---
+
+### Define a pipeline stage
+
+* When you have multiple stages in a pipeline, you need to define each one. 
+* Stages run in a sequence that you specify.
+* Imagine that you've built a Bicep file that you need to deploy twice: 
+  - once to infrastructure in the United States and 
+  - once to infrastructure in Europe.
+* Before you deploy the file, you validate your Bicep code. 
+
+Here's how the stages are defined in a pipeline YAML file:
+
+```YAML
+stages:
+
+- stage: Test
+  jobs:
+  - job: Test
+
+- stage: DeployUS
+  jobs: 
+  - job: DeployUS
+
+- stage: DeployEurope
+  jobs: 
+  - job: DeployEurope
+```
+
+### Control the sequence of stages
+
+* The stages run in the order that you define. 
+* A stage runs only if the previous stage succeeds. 
+* You can specify the dependencies between stages by using the `dependsOn` keyword:
+
+```YAML
+stages:
+
+- stage: Test
+  jobs:
+  - job: Test
+
+- stage: DeployUS
+  dependsOn: Test # Here
+  jobs: 
+  - job: DeployUS
+
+- stage: DeployEurope
+  dependsOn: Test # Here
+  jobs: 
+  - job: DeployEurope
+
+```
+
+**In reality, stages and jobs run in parallel only if you have enough agents to run multiple jobs at the same time. When you use Microsoft-hosted agents, you might need to purchase additional parallel jobs to achieve this.**
+
+---
+
+### Conditions
+
+* You might want to run a stage when a previous stage fails. 
+* For example, here's a different pipeline. If the deployment fails, a stage called Rollback runs immediately afterward:
+* You can use the condition keyword to specify a condition that should be met before a stage runs:
+
+```YAML
+stages:
+
+- stage: Test
+  jobs:
+  - job: Test
+
+- stage: Deploy
+  dependsOn: Test
+  jobs: 
+  - job: Deploy
+
+- stage: Rollback
+  condition: failed('Deploy') # Here
+  jobs: 
+  - job: Rollback
+
+```
+
+* Every job runs on a new agent. That means that every job starts from a clean environment, so in every job you typically need to check out the source code as your first step.
+---
+### Bicep deployment stages
+
+1. **Lint**: Use the Bicep linter to verify that the Bicep file is well formed and doesn't contain any obvious errors.
+2. **Validate**: Use the Azure Resource Manager preflight validation process to check for problems that might occur during deployment.
+3. **Preview**: Use the what-if command to validate a list of changes that will be applied against your Azure environment. Have a human manually review the what-if results and approve the pipeline before it proceeds.
+4. **Deploy**: Submit your deployment to Resource Manager and wait for it to finish.
+5. **Smoke Test**: Run basic post-deployment checks against some of the important resources that you deployed. These reviews are called `infrastructure smoke tests`.
+
+---
+---
+
+### Lint and validate your Bicep code
+
+* When you deploy a Bicep file, the Bicep tooling first runs some basic validation steps.
+* Bicep runs a linter over your files. Linting is the process of checking your code against a set of recommendations. 
+* The Bicep linter reviews your file and verifies that you followed best practices for maintainability, correctness, flexibility, and extensibility.
+
+**A linter contains a predefined set of rules for each of these categories. Example linter rules include:**
+
+* **Unused parameters**. The linter scans for any parameters that aren't used anywhere in the Bicep file. By eliminating unused parameters, you make it easier to deploy your template because you don't have to provide unnecessary values. You also reduce confusion when someone tries to work with your Bicep file.
+* **String interpolation**. The linter checks if your file uses the `concat()` function instead of Bicep string interpolation. String interpolation makes your Bicep files more readable.
+* **Default values for secure parameters**. The linter warns you if you set default values for parameters that are marked with the `@secure()` decorator. A default value for a secure parameter is a bad practice because it gives the secure parameter a human-readable value, and people might not change it before deployment.
+
+* The Bicep linter runs automatically every time you build a Bicep file.
+* You can configure Bicep to verify your file by manually building the Bicep file via the Bicep CLI:
+
+```PowerShell
+bicep build main.bicep
+```
+* When you run the `build` command, Bicep also transpiles your Bicep code to a `JSON ARM template`. You generally don't need the file that it outputs, so you can ignore it.
+* Because you want the linter to check your Bicep templates each time anyone checks code into your repository, you can add a lint stage and job to your pipeline:
+* You can express this addition in your pipeline YAML file like this:
+
+```YAML
+stages:
+
+- stage: Lint
+  jobs: 
+  - job: Lint
+    steps:
+      - script: |
+          az bicep build --file deploy/main.bicep  # Here
+```
+
+---
+
+### Linter warnings and errors
+
+* By default, the linter emits a warning when it discovers that a Bicep file has violated a rule and these aren't treated as errors, so they won't stop the pipeline run or stop subsequent stages from running.
+* You can change this behavior by configuring Bicep to treat the linter rule violations as errors instead of warnings. 
+* You do this configuration by adding a bicepconfig.json file to the folder that contains your Bicep file. 
+* You can decide which linter issues should be treated as errors and which should remain as warnings.
+---
+### Preflight validation
+
+* You also should check whether your Bicep template is likely to deploy to your Azure environment successfully. 
+* This check is called `preflight validation`, and it runs checks that need information from Azure. 
+* These kinds of checks include:
+  - Are the names that you specified for your Bicep resources valid?
+  - Are the names that you specified for your Bicep resources already taken?
+  - Are the regions that you're deploying your resources to valid?
+* Preflight validation requires communication with Azure, but it doesn't actually deploy any resources.
+
+You can use the `AzureResourceManagerTemplateDeployment` task to submit a Bicep file for preflight validation. Configure the `deploymentMode` to `Validation`:
+
+```YAML
+- stage: Validate
+  jobs:
+  - job: Validate
+    steps:
+      - task: AzureResourceManagerTemplateDeployment@3
+        inputs:
+          connectedServiceName: 'MyServiceConnection'
+          location: $(deploymentDefaultLocation)
+          deploymentMode: Validation # Here
+          resourceGroupName: $(ResourceGroupName)
+          csmFile: deploy/main.bicep
+```
+
