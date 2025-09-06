@@ -388,4 +388,10 @@ When your trigger fires, Azure Pipelines ensures that it waits for any active pi
 * Because you own the virtual machine, you can assign it a managed identity and use it from your pipeline.
 
 * However, most of the time your pipelines run by using a hosted agent, which is a server that Microsoft manages. Hosted agents aren't currently compatible with managed identities.
+* In other parts of your solution, if you have a choice between using a managed identity or using a normal service principal, it's best to go with a managed identity. They're easier to work with and are usually more secure.
 ---
+
+### Why can't you just use your user account?
+
+https://learn.microsoft.com/en-us/training/modules/authenticate-azure-deployment-pipeline-service-principals/2-understand-service-principals
+
