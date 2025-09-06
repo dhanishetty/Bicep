@@ -393,5 +393,16 @@ When your trigger fires, Azure Pipelines ensures that it waits for any active pi
 
 ### Why can't you just use your user account?
 
-https://learn.microsoft.com/en-us/training/modules/authenticate-azure-deployment-pipeline-service-principals/2-understand-service-principals
+* User accounts always need someone actively managing them.
+
+### How do service principals work?
+
+* Service principals are a feature of Microsoft Entra ID. 
+* Microsoft Entra ID is a global identity service. 
+* Many companies use Microsoft Entra ID, and each company is called a `tenant`.
+  >>> Application
+* Microsoft Entra ID has a concept of an `application`, which represents a system, piece of software, process, or some other nonhuman agent. 
+* You can think of a deployment pipeline as an application.
+
+
 
