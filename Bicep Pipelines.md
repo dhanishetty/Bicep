@@ -498,3 +498,127 @@ A display name isn't unique. Multiple service principals might share the same di
 * These cmdlets both use the service principal's object ID to identify it. 
 * Before you use the cmdlets, you need to obtain this ID from the application ID:
 
+```PowerShell
+$applicationId = APPLICATION_ID
+$servicePrincipalObjectId = (Get-AzADServicePrincipal -ApplicationId $applicationId).Id
+
+Remove-AzADServicePrincipalCredential -ObjectId $servicePrincipalObjectId
+
+$newCredential = New-AzADServicePrincipalCredential -ObjectId $servicePrincipalObjectId
+$newKey = $newCredential.SecretText
+```
+
+* A single service principal can have multiple keys. 
+* You can safely update your application to use a new key while the old key is still valid, and then delete the old key when it's no longer in use. 
+* This technique avoids downtime from key expiration.
+
+---
+
+### Manage the lifecycle of your service principal
+
+When you build a service principal for a pipeline, what will happen if the pipeline is eventually deleted or is no longer used?
+
+Service principals aren't removed automatically, so you need to audit and remove old ones. 
+attackers might gain access to their keys. It's best not to have credentials that aren't actively used.
+
+It's a good practice to document your service principals in a place that you and your team can easily access. You should include the following information for each service principal:
+
+* Essential identifying information, including its name and application ID.
+* The purpose of the service principal.
+* Who created it, who's responsible for managing it and its keys, and who might have answers if there's a problem.
+* The permissions that it needs, and a clear justification for why it needs them.
+* What its expected lifetime is.
+
+You should regularly audit your service principals to ensure that they're still in use and that the permissions they've been assigned are still correct.
+
+---
+---
+
+### Grant a service principal access to Azure
+
+### Service principal authorization
+
+* It's the responsibility of the Azure role-based access control (RBAC) system, sometimes called identity and access management (IAM). 
+* By using Azure RBAC, you can grant a service principal access to a specific resource group, subscription, or management group.
+* Microsoft Entra ID also has its own role system, which is sometimes called directory roles. You use these roles to grant permissions for service principals to manage Microsoft Entra ID. 
+---
+
+### Select the right role assignment for your pipeline
+
+**A role assignment has three key parts:** 
+  * who the role is assigned to (the assignee), 
+  * what they can do (the role), and 
+  * what resource or resources the role assignment applies to (the scope).
+
+### Assignee
+* You use the service principal's `application ID` to identify the correct service principal for that assignee.
+
+### Role
+
+* **Reader**: which allows the assignee to read information about resources but not modify or delete them.
+* **Contributor**: which allows the assignee to create resources and to read and modify existing resources. However, contributors can't grant other principals access to resources.
+* **Owner**: which allows full control over resources, including granting other principals access.
+
+You can also create your own custom role definition to specify the exact list of permissions that you want to assign.
+
+### Scope
+
+### Mixing and matching role assignments
+
+* You can create multiple role assignments that provide different permissions at different scopes.
+
+### Working with multiple environments
+
+* You should create separate service principals for each environment, and grant each service principal the minimum set of permissions that it needs for its deployments.
+
+### Create a role assignment for a service principal
+
+* To create a role assignment for a service principal, use the `New-AzRoleAssignment` cmdlet. You need to specify the assignee, role, and scope:
+
+```PowerShell
+New-AzRoleAssignment `
+  -ApplicationId 00001111-aaaa-2222-bbbb-3333cccc4444 `
+  -RoleDefinitionName Contributor `
+  -Scope '/subscriptions/aaaa0a0a-bb1b-cc2c-dd3d-eeeeee4e4e4e/resourceGroups/ToyWebsite' `
+  -Description "The deployment pipeline for the company's website needs to be able to create resources within the resource group."
+```
+
+Let's look at each argument:
+
+  * `-ApplicationId` specifies the service principal's application registration ID.
+  * `-RoleDefinitionName` specifies the name of a built-in role. If you use a custom role definition, specify the full role definition ID by using the `-RoleDefinitionId` argument instead.
+  * `-Scope` specifies the scope. This is usually a resource ID for a single resource, a resource group, or a subscription.
+  * `-Description` is a human-readable description of the role assignment.
+---
+### Create a service principal and role assignment in one operation
+
+```PowerShell
+$servicePrincipal = New-AzADServicePrincipal `
+  -DisplayName MyPipeline `
+  -Role Contributor ` # here
+  -Scope '/subscriptions/f0750bbe-ea75-4ae5-b24d-a92ca601da2c/resourceGroups/ToyWebsite' # here
+```
+
+### Grant access using Bicep
+
+* Role assignments are Azure resources. This means that you can create a role assignment by using Bicep. 
+
+```Bicep
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2023-04-01-preview' = {
+  name: guid(principalId, roleDefinitionId, resourceGroup().id)
+  properties: {
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionId)
+    principalId: principalId
+    description: 'The deployment pipeline for the company\'s website needs to be able to create resources within the resource group.'
+  }
+}
+```
+Let's look at each argument:
+
+* `name` is a unique identifier for the role assignment. This must be in the form of a globally unique identifier (GUID). It's a good practice to use the `guid()` function in Bicep to create a GUID, and to use the principal ID, role definition ID, and scope as the seed arguments for the function to ensure you create a name that's unique for each role assignment.
+* `principalType` should be set to `ServicePrincipal`.
+* `roleDefinitionId` is the fully qualified resource ID for the role definition you're assigning. Mostly you'll work with built-in roles, and you'll find the role definition ID in the Azure built-in roles documentation. For example, the Contributor role has the role definition ID `b24988ac-6180-42a0-ab88-20f7382dd24c`. When you specify it in your Bicep file, you express this using a fully qualified resource ID, such as `/subscriptions/aaaa0a0a-bb1b-cc2c-dd3d-eeeeee4e4e4e/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c`.
+* `principalId` is the service principal's object ID. Make sure you don't use the application ID or the application registration's object ID.
+* `description` is a human-readable description of the role assignment.
+
