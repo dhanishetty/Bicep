@@ -383,7 +383,9 @@ When your trigger fires, Azure Pipelines ensures that it waits for any active pi
 * When you work with Azure Pipelines, you usually rely on shared infrastructure provided by Microsoft.
 
 ---
-There are some situations where pipelines can use managed identities. In Azure Pipelines, you can create a self-hosted agent to run your pipeline's scripts and code by using on your own Azure-based virtual machine. Because you own the virtual machine, you can assign it a managed identity and use it from your pipeline.
+* There are some situations where pipelines can use managed identities. 
+* In Azure Pipelines, you can create a self-hosted agent to run your pipeline's scripts and code by using on your own Azure-based virtual machine. 
+* Because you own the virtual machine, you can assign it a managed identity and use it from your pipeline.
 
-However, most of the time your pipelines run by using a hosted agent, which is a server that Microsoft manages. Hosted agents aren't currently compatible with managed identities.
+* However, most of the time your pipelines run by using a hosted agent, which is a server that Microsoft manages. Hosted agents aren't currently compatible with managed identities.
 ---
