@@ -479,7 +479,22 @@ You can't get this key again, so be sure to use it immediately or save it somewh
 ### Identify a service principal
 
 Service principals have several identifiers and names that you use to identify and work with them. The identifiers that you use the most are:
-   * **Application ID**: The application registration has a unique identifier, often called an application ID or sometimes a client ID. You typically use it as the username when the service principal signs in to Azure.
+   * **Application ID**: The application registration has a unique identifier, often called an `application ID` or sometimes a `client ID`. You typically use it as the username when the service principal signs in to Azure.
   * **Object ID**: The application registration and the service principal have their own separate object IDs, which are unique identifiers assigned by Microsoft Entra ID. Occasionally, you'll need to use these object IDs when you manage a service principal.
   * **Display name**: This is a human-readable name that describes the service principal.
+
+A display name isn't unique. Multiple service principals might share the same display name. It's a good practice to use the application ID instead.
+
+---
+### Handle expired keys
+
+* Service principals don't expire, but their keys do.
+* By default, the expiration time is set to one year.
+* You need to renew or rotate keys regularly.
+
+  >>> Keys Resetting
+* To reset a key for a service principal, first use the `Remove-AzADServicePrincipalCredential` cmdlet to remove the existing credential. 
+* Then use the `New-AzADServicePrincipalCredential` cmdlet to add a new credential. 
+* These cmdlets both use the service principal's object ID to identify it. 
+* Before you use the cmdlets, you need to obtain this ID from the application ID:
 
