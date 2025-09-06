@@ -394,6 +394,7 @@ When your trigger fires, Azure Pipelines ensures that it waits for any active pi
 ### Why can't you just use your user account?
 
 * User accounts always need someone actively managing them.
+---
 
 ### How do service principals work?
 
@@ -401,9 +402,11 @@ When your trigger fires, Azure Pipelines ensures that it waits for any active pi
 * Microsoft Entra ID is a global identity service. 
 * Many companies use Microsoft Entra ID, and each company is called a `tenant`.
   
-  >>> Application
+>>> Application
 * Microsoft Entra ID has a concept of an `application`, which represents a system, piece of software, process, or some other nonhuman agent. 
 * You can think of a deployment pipeline as an application.
+* When you create an `application` and tell Microsoft Entra ID about it, you create an `object` called an `application registration`. 
+* An application registration **represents** the application in Microsoft Entra ID.
 
 
 
