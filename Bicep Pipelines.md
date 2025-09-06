@@ -824,3 +824,95 @@ You can use the `AzureResourceManagerTemplateDeployment` task to submit a Bicep 
           csmFile: deploy/main.bicep
 ```
 
+* The preflight validation command runs the Bicep linter.
+* By adding validation stages to your pipeline to run the linter and perform a preflight validation, you'll have more confidence before you deploy your Bicep file.
+
+---
+---
+### Preview and approve your deployment
+
+### The what-if operation
+
+* A Bicep file describes the state that you want your Azure environment to be in at the end of a deployment. 
+
+* A deployment can result in new resources being deployed into your environment or existing resources being updated. 
+* When you run a deployment in complete mode, it can even result in the deletion of existing resources.
+* It's a good practice to add an extra step to verify which resources will be created, updated, and deleted.
+
+* You can use the `az deployment group what-if` Azure CLI command in your pipeline definition to run the what-if step:
+
+```YAML
+stages:
+
+- stage: Preview
+  jobs: 
+  - job: Preview
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'MyServiceConnection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az deployment group what-if \                      # Here
+            --resource-group $(ResourceGroupName) \
+            --template-file deploy/main.bicep
+```
+
+In this module, we'll use the Azure CLI to run the what-if operation. If you build your own PowerShell-based pipeline, you can use the `New-AzResourceGroupDeployment` cmdlet with the `-Whatif` switch, or you can use the `Get-AzResourceGroupDeploymentWhatIfResult` cmdlet.
+
+* The what-if operation doesn't make any changes to your environment. Instead, it describes the resources that will be created, the resource properties that will be updated, and the resources that will be deleted.
+* What-if sometimes shows that a resource will change when actually no change will happen. This feedback is called `noise`.
+
+---
+### Environments
+
+* In Azure Pipelines, an environment represents the place to which your solution is deployed. Environments provide features that help when you work with complex deployments. 
+* When you include environments in your pipeline, you need to use a special type of job called a `deployment job`.
+
+```YAML
+variables:
+  - name: deploymentDefaultLocation
+    value: westus3
+
+stages:
+
+- stage: Preview
+  jobs:
+  - job: Preview
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'MyServiceConnection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az deployment group what-if \
+            --resource-group $(ResourceGroupName) \
+            --template-file deploy/main.bicep
+
+- stage: Deploy
+  jobs:
+    - deployment: Deploy                   # From Here and below 
+      environment: MyAzureEnvironment
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - checkout: self
+
+            - task: AzureResourceManagerTemplateDeployment@3
+              name: Deploy
+              displayName: Deploy to Azure
+              inputs:
+                connectedServiceName: 'MyServiceConnection'
+                location: $(deploymentDefaultLocation)
+                resourceGroupName: $(ResourceGroupName)
+                csmFile: deploy/main.bicep
+```
+
+Notice that, in the YAML definition for a deployment job, there are some key differences from a normal job:
+
+* Instead of beginning with the word `job`, a deployment job is defined as `deployment`.
+* The `environment` keyword specifies the name of the environment to target. In the preceding example, the deployment is tracked against an environment named `MyAzureEnvironment`.
+* The `strategy` keyword specifies how Azure Pipelines runs the deployment steps. Deployment strategies support complex deployment processes, especially when you have multiple production environments. In this module, you use the `runOnce` deployment strategy. This strategy behaves similarly to the other jobs that you're already used to.
